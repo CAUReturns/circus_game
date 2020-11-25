@@ -8,8 +8,10 @@ setGameOption(GameOption.ROOM_TITLE, False)
 
 scene = CircusScene()
 scene.add_user(User(scene))
-scene.add_obstacle(Obstacle(scene, 1))
-scene.add_obstacle(Obstacle(scene, 2))
+scene.add_obstacle(Douner(scene, y=200))
+# scene.add_obstacle(Douner(scene, start_time=1))
+# scene.add_obstacle(Dooli(scene, start_time=4))
+# scene.add_obstacle(Douner(scene, y=200, start_time=7))
 scene.add_landscape(Landscape(scene, 1))
 
 startGame(scene)

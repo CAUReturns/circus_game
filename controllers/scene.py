@@ -4,10 +4,10 @@ from enum import Enum
 
 
 class Key(Enum):
-    LEFT = 82
-    RIGHT = 83
-    UP = 84
-    DOWN = 85
+    LEFT = 1
+    RIGHT = 4
+    UP = 23
+    DOWN = 19
 
 
 class CircusScene(Scene):
