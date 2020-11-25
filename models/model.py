@@ -16,10 +16,13 @@ class CustomObject(Object):
         self.y += yd
         self.locate(self.scene, self.x, self.y)
 
+    def finish(self):
+        pass
+
 
 class Landscape(CustomObject):
-    def __init__(self, game_scene, idx):
-        img = Formatter.image('landscape', idx)
+    def __init__(self, game_scene):
+        img = Formatter.image('landscape')
         super().__init__(1300, 419, img, game_scene)
         self.movement = Come(self)
         self.movement.start()
@@ -48,22 +51,78 @@ class Creature(CustomObject):
 
 class User(Creature):
     def __init__(self, game_scene):
-        img = Formatter.image('user')
+        self.idx = 0
+        img = Formatter.image('user', idx=self.idx)
         self.moving = False
-        super().__init__(100, 100, 200, 100, img, game_scene)
+        self.sitting = False
+        self.motion = Walk(self)
+        super().__init__(100, 100, 90, 100, img, game_scene)
+        self.motion.start()
 
     def jump(self):
         if not self.moving:
+            self.stand()
             Jump(self).start()
+
+    def set_hitbox(self, y, xr, yr):
+        self.y = y
+        self.locate(self.scene, self.x, self.y)
+        self.xr = xr
+        self.yr = yr
+
+    def sit(self):
+        if self.sitting:
+            self.stand()
+        elif not self.moving:
+            self.sitting = True
+            img = Formatter.image('user', idx=13)
+            self.setImage(img)
+            self.set_hitbox(90, 90, 60)
+            self.motion.stop()
+
+    def stand(self):
+        self.sitting = False
+        img = Formatter.image('user', idx=0)
+        self.setImage(img)
+        self.set_hitbox(100, 90, 100)
+        self.motion.start()
+
+    def walk(self):
+        self.idx = (self.idx+1) % 13
+        img = Formatter.image('user', idx=self.idx)
+        self.setImage(img)
 
 
 class Obstacle(Creature):
-    def __init__(self, game_scene, idx):
-        img = Formatter.image('obs', idx)
-        super().__init__(1300, 100, 100, 100, img, game_scene)
-        Come(self, 800).start()
+    def __init__(self, game_scene, y, xr, yr, start_time, img):
+        super().__init__(1300, y, xr, yr, img, game_scene)
+        self.motion = Come(self, start_time)
+        self.motion.start()
 
     def hit(self, user):
-        x_hit = abs(self.x-user.x) <= max(self.xr, user.xr)
-        y_hit = abs(self.y-user.y) <= max(self.yr, user.yr)
+        x_hit = not (self.x > user.x+user.xr or self.x+self.xr < user.x)
+        y_hit = not (self.y > user.y+user.yr or self.y+self.yr < user.y)
         return x_hit and y_hit
+
+    def finish(self):
+        if self.x < -150:
+            self.scene.remove_obstacle(self)
+            self.motion.stop()
+
+    def slow(self):
+        self.motion.slow()
+
+    def fast(self):
+        self.motion.fast()
+
+
+class Douner(Obstacle):
+    def __init__(self, game_scene, y=100, start_time=0):
+        img = Formatter.image('obs1')
+        super().__init__(game_scene, y, 103, 60, start_time, img)
+
+
+class Dooli(Obstacle):
+    def __init__(self, game_scene, y=100, start_time=0):
+        img = Formatter.image('obs2')
+        super().__init__(game_scene, y, 50, 60, start_time, img)

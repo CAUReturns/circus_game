@@ -4,10 +4,10 @@ from enum import Enum
 
 
 class Key(Enum):
-    LEFT = 82
-    RIGHT = 83
-    UP = 84
-    DOWN = 85
+    LEFT = 1
+    RIGHT = 4
+    UP = 23
+    DOWN = 19
 
 
 class CircusScene(Scene):
@@ -25,6 +25,11 @@ class CircusScene(Scene):
     def add_obstacle(self, obstacle):
         self.obstacles.append(obstacle)
 
+    def remove_obstacle(self, obs):
+        if self.obstacles.count(obs) > 0:
+            self.obstacles.remove(obs)
+            obs.hide()
+
     def add_landscape(self, landscape):
         self.landscapes.append(landscape)
 
@@ -41,6 +46,12 @@ class CircusScene(Scene):
         self.direction = -self.direction
         for landscape in self.landscapes:
             landscape.change_direction()
+        if idx == -1:
+            for obs in self.obstacles:
+                obs.slow()
+        elif idx == 1:
+            for obs in self.obstacles:
+                obs.fast()
 
     def onKeyboard(self, key, pressed):
         if not pressed:
@@ -51,3 +62,5 @@ class CircusScene(Scene):
             self.move(-1)
         elif key == Key.UP.value:
             self.user.jump()
+        elif key == Key.DOWN.value:
+            self.user.sit()
