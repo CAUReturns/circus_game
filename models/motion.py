@@ -8,6 +8,7 @@ class Movement(Timer):
         self.count = 0
         self.max_time = max_time
         self.creature = creature
+        self.stopped = False
         self.creature.moving = True
         super().__init__(start_time)
 
@@ -16,6 +17,10 @@ class Movement(Timer):
 
     def after_action(self):
         pass
+
+    def stop(self):
+        self.stopped = True
+        super().stop()
 
     def onTimeout(self):
         self.count += 1
@@ -27,7 +32,6 @@ class Movement(Timer):
             self.creature.moving = False
             self.count = 0
             self.stop()
-            self.after_action()
 
 
 class Jump(Movement):
@@ -46,6 +50,7 @@ class Jump(Movement):
 class Come(Movement):
     def __init__(self, creature, start_time=0, max_time=0):
         self.dir = -1
+        self.speed = 2
         delay = 0.001
         super().__init__(creature, delay, start_time, max_time)
 
@@ -53,7 +58,24 @@ class Come(Movement):
         self.dir = -self.dir
 
     def action(self):
-        self.creature.move(2*self.dir, 0)
-
-    def after_action(self):
+        if self.stopped:
+            return
+        self.creature.move(int(self.speed*self.dir), 0)
         self.creature.finish()
+
+    def slow(self):
+        self.speed = 1.5
+
+    def fast(self):
+        self.speed = 2
+
+
+class Walk(Movement):
+    def __init__(self, creature, start_time=0, max_time=0):
+        self.dir = -1
+        delay = 0.001
+        super().__init__(creature, delay, start_time, max_time)
+        self.creature.moving = False
+
+    def action(self):
+        self.creature.walk()

@@ -21,8 +21,8 @@ class CustomObject(Object):
 
 
 class Landscape(CustomObject):
-    def __init__(self, game_scene, idx):
-        img = Formatter.image('landscape', idx)
+    def __init__(self, game_scene):
+        img = Formatter.image('landscape')
         super().__init__(1300, 419, img, game_scene)
         self.movement = Come(self)
         self.movement.start()
@@ -51,20 +51,53 @@ class Creature(CustomObject):
 
 class User(Creature):
     def __init__(self, game_scene):
-        img = Formatter.image('user', idx=1)
+        self.idx = 0
+        img = Formatter.image('user', idx=self.idx)
         self.moving = False
+        self.sitting = False
+        self.motion = Walk(self)
         super().__init__(100, 100, 90, 100, img, game_scene)
+        self.motion.start()
 
     def jump(self):
         if not self.moving:
+            self.stand()
             Jump(self).start()
+
+    def set_hitbox(self, y, xr, yr):
+        self.y = y
+        self.locate(self.scene, self.x, self.y)
+        self.xr = xr
+        self.yr = yr
+
+    def sit(self):
+        if self.sitting:
+            self.stand()
+        elif not self.moving:
+            self.sitting = True
+            img = Formatter.image('user', idx=13)
+            self.setImage(img)
+            self.set_hitbox(90, 90, 60)
+            self.motion.stop()
+
+    def stand(self):
+        self.sitting = False
+        img = Formatter.image('user', idx=0)
+        self.setImage(img)
+        self.set_hitbox(100, 90, 100)
+        self.motion.start()
+
+    def walk(self):
+        self.idx = (self.idx+1) % 13
+        img = Formatter.image('user', idx=self.idx)
+        self.setImage(img)
 
 
 class Obstacle(Creature):
     def __init__(self, game_scene, y, xr, yr, start_time, img):
         super().__init__(1300, y, xr, yr, img, game_scene)
-        motion = Come(self, start_time, 800)
-        motion.start()
+        self.motion = Come(self, start_time)
+        self.motion.start()
 
     def hit(self, user):
         x_hit = not (self.x > user.x+user.xr or self.x+self.xr < user.x)
@@ -72,7 +105,15 @@ class Obstacle(Creature):
         return x_hit and y_hit
 
     def finish(self):
-        self.hide()
+        if self.x < -150:
+            self.scene.remove_obstacle(self)
+            self.motion.stop()
+
+    def slow(self):
+        self.motion.slow()
+
+    def fast(self):
+        self.motion.fast()
 
 
 class Douner(Obstacle):

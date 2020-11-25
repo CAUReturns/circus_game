@@ -2,5 +2,6 @@ class Formatter:
     @staticmethod
     def image(name, idx=''):
         prefix = 'images/'
-        postfix = '.png'
-        return prefix + name + str(idx) + postfix
+        postfix = '' if idx == '' else '/'+str(idx)
+        postfix += '.png'
+        return prefix + name + postfix
