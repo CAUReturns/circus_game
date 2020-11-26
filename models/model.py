@@ -65,6 +65,7 @@ class User(Creature):
     def __init__(self, game_scene):
         self.idx = 0
         img = Formatter.image('user', idx=self.idx)
+        self.damaging = False
         self.moving = False
         self.sitting = False
         super().__init__(100, 100, 90, 100, img, game_scene)
@@ -93,7 +94,9 @@ class User(Creature):
             self.motion.stop()
 
     def damage(self):
+        self.damaging = True
         self.motion.stop()
+        self.set_hitbox(100, 90, 100)
         img = Formatter.image('user', idx=14)
         self.setImage(img)
         Damage(self).start()

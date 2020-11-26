@@ -30,7 +30,7 @@ class GameManager:
 
     def end_game(self):
         stage = self.get_stage()
-        stage.stop_all()
+        stage.end()
         self.defeat_scene.enter()
 
     def initialize_stage(self):
