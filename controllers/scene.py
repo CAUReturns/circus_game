@@ -15,6 +15,7 @@ class CircusScene(Scene):
     def __init__(self, manager):
         self.map_idx = 0
         self.user = None
+        self.sound = None
         self.manager = manager
         self.direction = 1
         self.obstacles = []
@@ -24,6 +25,7 @@ class CircusScene(Scene):
 
     def initialize(self, user, obstacles, landscapes, life_cnt):
         self.user = user
+        self.sound = Sound(Formatter.sound('main', ''))
         self.obstacles = []
         self.landscapes = []
         for obs in obstacles:
@@ -32,13 +34,6 @@ class CircusScene(Scene):
             self.add_landscape(ls)
         for i in range(life_cnt):
             self.increase_life()
-
-    def stop_all(self):
-        self.user.stop()
-        for obs in self.obstacles:
-            obs.stop()
-        for ls in self.landscapes:
-            ls.stop()
 
     def increase_life(self):
         self.life.append(Life(self, self.life.__len__()))
@@ -96,14 +91,23 @@ class CircusScene(Scene):
         elif key == Key.DOWN.value:
             self.user.sit()
 
-    def end_game(self):
-        self.manager.end_game()
+    def end(self):
+        self.sound.stop()
+        self.user.stop()
+        for obs in self.obstacles:
+            obs.stop()
+        for ls in self.landscapes:
+            ls.stop()
+
+    def enter(self):
+        # self.sound.play(loop=True)
+        super().enter()
 
 
 class DefeatScene(Scene):
     def __init__(self, manager):
         self.manager = manager
-        self.sound = Sound('sound/1.wav')
+        self.sound = Sound(Formatter.sound('defeat', ''))
         super().__init__('', Formatter.image('defeat_scene'))
 
     def enter(self):

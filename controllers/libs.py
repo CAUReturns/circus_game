@@ -1,7 +1,12 @@
 class Formatter:
     @staticmethod
     def image(name, idx=''):
-        prefix = 'images/'
-        postfix = '' if idx == '' else '/'+str(idx)
-        postfix += '.png'
-        return prefix + name + postfix
+        return 'images/' + name + Formatter.concat_idx(idx) + '.png'
+
+    @staticmethod
+    def sound(name, idx=''):
+        return 'sound/' + name + Formatter.concat_idx(idx) + '.wav'
+
+    @staticmethod
+    def concat_idx(idx=''):
+        return '' if idx == '' else '/'+str(idx)
