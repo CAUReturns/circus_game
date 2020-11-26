@@ -1,6 +1,7 @@
 from bangtal import *
 from controllers.libs import *
 from models.model import *
+from models.interface import *
 from enum import Enum
 
 
@@ -94,21 +95,25 @@ class CircusScene(Scene):
     def end(self):
         self.sound.stop()
         self.user.stop()
+        self.user.hide()
         for obs in self.obstacles:
             obs.stop()
+            obs.hide()
         for ls in self.landscapes:
             ls.stop()
+            ls.hide()
 
     def enter(self):
-        # self.sound.play(loop=True)
+        self.sound.play(loop=True)
         super().enter()
 
 
 class DefeatScene(Scene):
     def __init__(self, manager):
+        super().__init__('', Formatter.image('defeat_scene'))
         self.manager = manager
         self.sound = Sound(Formatter.sound('defeat', ''))
-        super().__init__('', Formatter.image('defeat_scene'))
+        self.btn = RetryButton(self)
 
     def enter(self):
         self.sound.play(loop=False)
