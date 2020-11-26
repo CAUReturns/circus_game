@@ -1,5 +1,6 @@
 from bangtal import *
 from controllers.libs import *
+from models.model import *
 from enum import Enum
 
 
@@ -19,6 +20,34 @@ class CircusScene(Scene):
         self.obstacles = []
         self.landscapes = []
         super().__init__('', Formatter.image('background'))
+        self.life = []
+
+    def initialize(self, user, obstacles, landscapes, life_cnt):
+        self.user = user
+        self.obstacles = []
+        self.landscapes = []
+        for obs in obstacles:
+            self.add_obstacle(obs)
+        for ls in landscapes:
+            self.add_landscape(ls)
+        for i in range(life_cnt):
+            self.increase_life()
+
+    def stop_all(self):
+        self.user.stop()
+        for obs in self.obstacles:
+            obs.stop()
+        for ls in self.landscapes:
+            ls.stop()
+
+    def increase_life(self):
+        self.life.append(Life(self, self.life.__len__()))
+
+    def decrease_life(self):
+        life = self.life.pop()
+        life.hide()
+        if self.life.__len__() == 0:
+            self.manager.end_game()
 
     def add_user(self, user):
         self.user = user
@@ -39,8 +68,8 @@ class CircusScene(Scene):
         for ob in self.obstacles:
             hit = hit or ob.hit(self.user)
         if hit:
-            return True
-        return False
+            self.user.damage()
+            self.decrease_life()
 
     def move(self, idx):
         if self.direction == idx:

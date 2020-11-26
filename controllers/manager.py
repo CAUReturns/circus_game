@@ -3,15 +3,17 @@ from controllers.scene import *
 import random
 from enum import Enum
 
-STAGE_NUM = 1
-GAME_TIME = 20
-OBST_INTERVAL = 3
-OBST_NUM = 2
 
-
-class Obstacle(Enum):
+class ObstacleType(Enum):
     DOOLI = 0
     DOUNER = 1
+
+
+STAGE_NUM = 1
+GAME_TIME = 20
+OBSTACLE_INTERVAL = 3
+OBSTACLE_NUM = ObstacleType.__len__()
+LIFE_CNT = 3
 
 
 class GameManager:
@@ -21,48 +23,39 @@ class GameManager:
         self.defeat_scene = DefeatScene(self)
         for i in range(STAGE_NUM):
             self.stages.append(CircusScene(self))
-        # self.init_stage()
 
     def start_game(self):
-        self.stages[self.stage_idx].enter()
-        # do something
+        stage = self.initialize_stage()
+        stage.enter()
 
     def end_game(self):
-        pass
+        stage = self.get_stage()
+        stage.stop_all()
+        self.defeat_scene.enter()
 
-    # def init_stage(self):
-    #     stage = self.stages[self.stage_idx]
-    #     self.defeat_scene = DefeatScene(stage)
-    #
-    #     stage.add_user(User(stage, self.defeat_scene))
-    #     stage.add_landscape(Landscape(stage))
-    #
-    #     if curr_stage == 0:
-    #         self.obstacle_random_generator_1(curr_stage)
-    #     else:
-    #         pass
-    #
-    # def obstacle_random_generator_1(self, curr_stage):
-    #     stage = self.stages[curr_stage]
-    #
-    #     for time_slice in range(0, GAME_TIME, OBST_INTERVAL):
-    #         variation = random.randrange(3) - 1
-    #         timing = time_slice - variation
-    #
-    #         obstacle = random.randrange(OBST_NUM)
-    #         height = random.randrange(1, 3) * 100
-    #
-    #         if obstacle == Obstacle.DOOLI.value:
-    #             print("dooli")
-    #             stage.add_obstacle(Dooli(stage, self.defeat_scene, y=height, start_time=timing))
-    #         elif obstacle == Obstacle.DOUNER.value:
-    #             print("douner")
-    #             stage.add_obstacle(Douner(stage, self.defeat_scene, y=height, start_time=timing))
-    #         else:
-    #             pass
-    #
-    # def set_curr_stage(self, curr_stage):
-    #     self.stage_idx = curr_stage
-    #
-    # def start_game(self):
-    #     startGame(self.stages[0])
+    def initialize_stage(self):
+        stage = self.get_stage()
+        user = User(stage)
+        obstacles = self.get_random_obstacles()
+        landscapes = [Landscape(stage)]
+        stage.initialize(user, obstacles, landscapes, LIFE_CNT)
+        return stage
+
+    def get_random_obstacles(self):
+        obstacles = []
+        stage = self.get_stage()
+        for time_slice in range(0, GAME_TIME, OBSTACLE_INTERVAL):
+            variation = random.randrange(3) - 1
+            timing = time_slice - variation
+
+            obstacle = random.randrange(OBSTACLE_NUM)
+            height = random.randrange(1, 3) * 100
+
+            if obstacle == ObstacleType.DOOLI.value:
+                obstacles.append(Dooli(stage, y=height, start_time=timing))
+            elif obstacle == ObstacleType.DOUNER.value:
+                obstacles.append(Douner(stage, y=height, start_time=timing))
+        return obstacles
+
+    def get_stage(self):
+        return self.stages[self.stage_idx]
