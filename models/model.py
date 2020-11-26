@@ -7,6 +7,8 @@ class CustomObject(Object):
         super().__init__(img)
         self.x = x
         self.y = y
+        self.ended = False
+        self.motion = None
         self.scene = game_scene
         self.locate(game_scene, self.x, self.y)
         self.show()
@@ -16,19 +18,30 @@ class CustomObject(Object):
         self.y += yd
         self.locate(self.scene, self.x, self.y)
 
+    def stop(self):
+        if self.motion is not None:
+            self.ended = True
+            self.motion.stop()
+
     def finish(self):
         pass
+
+
+class Life(CustomObject):
+    def __init__(self, game_scene, idx):
+        img = Formatter.image('life')
+        super().__init__(1065+idx*60, 650, img, game_scene)
 
 
 class Landscape(CustomObject):
     def __init__(self, game_scene):
         img = Formatter.image('landscape')
         super().__init__(1300, 419, img, game_scene)
-        self.movement = Come(self)
-        self.movement.start()
+        self.motion = Come(self)
+        self.motion.start()
 
     def change_direction(self):
-        self.movement.change_direction()
+        self.motion.change_direction()
 
     def move(self, xd, yd):
         if self.x < -130:
@@ -55,8 +68,8 @@ class User(Creature):
         img = Formatter.image('user', idx=self.idx)
         self.moving = False
         self.sitting = False
-        self.motion = Walk(self)
         super().__init__(100, 100, 90, 100, img, game_scene)
+        self.motion = Walk(self)
         self.motion.start()
 
     def jump(self):
@@ -80,6 +93,12 @@ class User(Creature):
             self.set_hitbox(90, 90, 60)
             self.motion.stop()
 
+    def damage(self):
+        self.motion.stop()
+        img = Formatter.image('user', idx=14)
+        self.setImage(img)
+        Damage(self).start()
+
     def stand(self):
         self.sitting = False
         img = Formatter.image('user', idx=0)
@@ -96,18 +115,22 @@ class User(Creature):
 class Obstacle(Creature):
     def __init__(self, game_scene, y, xr, yr, start_time, img):
         super().__init__(1300, y, xr, yr, img, game_scene)
+        self.already_hit = False
         self.motion = Come(self, start_time)
         self.motion.start()
 
     def hit(self, user):
         x_hit = not (self.x > user.x+user.xr or self.x+self.xr < user.x)
         y_hit = not (self.y > user.y+user.yr or self.y+self.yr < user.y)
-        return x_hit and y_hit
+        if x_hit and y_hit and not self.already_hit:
+            self.already_hit = True
+            return True
+        return False
 
     def finish(self):
         if self.x < -150:
             self.scene.remove_obstacle(self)
-            self.motion.stop()
+            super().stop()
 
     def slow(self):
         self.motion.slow()
