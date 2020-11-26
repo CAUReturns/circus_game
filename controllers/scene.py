@@ -11,9 +11,10 @@ class Key(Enum):
 
 
 class CircusScene(Scene):
-    def __init__(self):
+    def __init__(self, manager):
         self.map_idx = 0
         self.user = None
+        self.manager = manager
         self.direction = 1
         self.obstacles = []
         self.landscapes = []
@@ -66,13 +67,20 @@ class CircusScene(Scene):
         elif key == Key.DOWN.value:
             self.user.sit()
 
-
-class HitScene(Scene):
-    def __init__(self, stage_scene):
-        self.stage_scene = stage_scene
-        super().__init__('', Formatter.image('hit_scene'))
-    
-    def onKeyboard(self, key, pressed):
-        self.stage_scene.enter()
+    def end_game(self):
+        self.manager.end_game()
 
 
+class DefeatScene(Scene):
+    def __init__(self, manager):
+        self.manager = manager
+        self.sound = Sound('sound/1.wav')
+        super().__init__('', Formatter.image('defeat_scene'))
+
+    def enter(self):
+        self.sound.play(loop=False)
+        super().enter()
+
+    def start_game(self):
+        self.sound.stop()
+        self.manager.start_game()
