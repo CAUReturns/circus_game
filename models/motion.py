@@ -79,3 +79,13 @@ class Walk(Movement):
 
     def action(self):
         self.creature.walk()
+
+
+class Damage(Timer):
+    def __init__(self, creature):
+        super().__init__(0.5)
+        self.creature = creature
+
+    def onTimeout(self):
+        if not self.creature.ended:
+            self.creature.stand()
