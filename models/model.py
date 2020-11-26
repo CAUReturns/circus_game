@@ -39,24 +39,26 @@ class Landscape(CustomObject):
 
 
 class Creature(CustomObject):
-    def __init__(self, x, y, xr, yr, img, game_scene):
+    def __init__(self, x, y, xr, yr, img, game_scene, hit_scene):
         super().__init__(x, y, img, game_scene)
         self.xr = xr
         self.yr = yr
+        self.hit_scene = hit_scene
 
     def move(self, xd, yd):
         super().move(xd, yd)
-        self.scene.check_hit()
+        if self.scene.check_hit():
+            self.hit_scene.enter()
 
 
 class User(Creature):
-    def __init__(self, game_scene):
+    def __init__(self, game_scene, hit_scene):
         self.idx = 0
         img = Formatter.image('user', idx=self.idx)
         self.moving = False
         self.sitting = False
         self.motion = Walk(self)
-        super().__init__(100, 100, 90, 100, img, game_scene)
+        super().__init__(100, 100, 90, 100, img, game_scene, hit_scene)
         self.motion.start()
 
     def jump(self):
@@ -94,8 +96,8 @@ class User(Creature):
 
 
 class Obstacle(Creature):
-    def __init__(self, game_scene, y, xr, yr, start_time, img):
-        super().__init__(1300, y, xr, yr, img, game_scene)
+    def __init__(self, game_scene, hit_scene, y, xr, yr, start_time, img):
+        super().__init__(1300, y, xr, yr, img, game_scene, hit_scene)
         self.motion = Come(self, start_time)
         self.motion.start()
 
@@ -117,12 +119,12 @@ class Obstacle(Creature):
 
 
 class Douner(Obstacle):
-    def __init__(self, game_scene, y=100, start_time=0):
+    def __init__(self, game_scene, hit_scene, y=100, start_time=0):
         img = Formatter.image('obs1')
-        super().__init__(game_scene, y, 103, 60, start_time, img)
+        super().__init__(game_scene, hit_scene, y, 103, 60, start_time, img)
 
 
 class Dooli(Obstacle):
-    def __init__(self, game_scene, y=100, start_time=0):
+    def __init__(self, game_scene, hit_scene, y=100, start_time=0):
         img = Formatter.image('obs2')
-        super().__init__(game_scene, y, 50, 60, start_time, img)
+        super().__init__(game_scene, hit_scene, y, 50, 60, start_time, img)

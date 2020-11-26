@@ -18,14 +18,17 @@ class GameManager:
     def __init__(self):
         self.curr_stage = 0
         self.stage_list = []
+        self.hit_scene = None
+
         for i in range(STAGE_NUM):
             stage = CircusScene()
             self.stage_list.append(stage)
 
     def init_stage(self, curr_stage):
         stage = self.stage_list[curr_stage]
+        self.hit_scene = HitScene(stage)
 
-        stage.add_user(User(stage))
+        stage.add_user(User(stage, self.hit_scene))
         stage.add_landscape(Landscape(stage))
         
         if curr_stage == 0:
@@ -45,10 +48,10 @@ class GameManager:
 
             if obstacle == Obstacle.DOOLI.value:
                 print("dooli")
-                stage.add_obstacle(Dooli(stage, y=height, start_time=timing))
+                stage.add_obstacle(Dooli(stage, self.hit_scene, y=height, start_time=timing))
             elif obstacle == Obstacle.DOUNER.value:
                 print("douner")
-                stage.add_obstacle(Douner(stage, y=height, start_time=timing))
+                stage.add_obstacle(Douner(stage, self.hit_scene, y=height, start_time=timing))
             else:
                 pass
 

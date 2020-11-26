@@ -38,7 +38,8 @@ class CircusScene(Scene):
         for ob in self.obstacles:
             hit = hit or ob.hit(self.user)
         if hit:
-            print('Hit!')
+            return True
+        return False
 
     def move(self, idx):
         if self.direction == idx:
@@ -64,3 +65,14 @@ class CircusScene(Scene):
             self.user.jump()
         elif key == Key.DOWN.value:
             self.user.sit()
+
+
+class HitScene(Scene):
+    def __init__(self, stage_scene):
+        self.stage_scene = stage_scene
+        super().__init__('', Formatter.image('hit_scene'))
+    
+    def onKeyboard(self, key, pressed):
+        self.stage_scene.enter()
+
+
