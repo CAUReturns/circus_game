@@ -21,7 +21,16 @@ class CircusScene(Scene):
         self.landscapes = []
         super().__init__('', Formatter.image('background'))
         self.life = []
-        for i in range(3):
+
+    def initialize(self, user, obstacles, landscapes, life_cnt):
+        self.user = user
+        self.obstacles = []
+        self.landscapes = []
+        for obs in obstacles:
+            self.add_obstacle(obs)
+        for ls in landscapes:
+            self.add_landscape(ls)
+        for i in range(life_cnt):
             self.increase_life()
 
     def stop_all(self):
@@ -38,7 +47,7 @@ class CircusScene(Scene):
         life = self.life.pop()
         life.hide()
         if self.life.__len__() == 0:
-            self.stop_all()
+            self.manager.end_game()
 
     def add_user(self, user):
         self.user = user

@@ -130,6 +130,7 @@ class Obstacle(Creature):
         if self.x < -150:
             self.scene.remove_obstacle(self)
             super().stop()
+        self.scene.check_hit()
 
     def slow(self):
         self.motion.slow()
@@ -141,7 +142,7 @@ class Obstacle(Creature):
 class Douner(Obstacle):
     def __init__(self, game_scene, y=100, start_time=0):
         img = Formatter.image('obs1')
-        super().__init__(game_scene, y, 103, 60, start_time, img)
+        super().__init__(game_scene, y, 50, 60, start_time, img)
 
 
 class Dooli(Obstacle):
