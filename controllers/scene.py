@@ -26,7 +26,7 @@ class CircusScene(Scene):
 
     def initialize(self, user, obstacles, landscapes, life_cnt):
         self.user = user
-        self.sound = Sound(Formatter.sound('main', ''))
+        self.sound = Sound(Formatter.sound('gameplay', ''))
         self.obstacles = []
         self.landscapes = []
         for obs in obstacles:
@@ -118,6 +118,19 @@ class DefeatScene(Scene):
     def enter(self):
         self.sound.play(loop=False)
         super().enter()
+
+    def start_game(self):
+        self.sound.stop()
+        self.manager.start_game()
+
+
+class MenuScene(Scene):
+    def __init__(self, manager):
+        super().__init__('', Formatter.image('main'))
+        self.manager = manager
+        self.sound = Sound(Formatter.sound('main', ''))
+        self.btn = StartButton(self)
+        self.sound.play(loop=True)
 
     def start_game(self):
         self.sound.stop()

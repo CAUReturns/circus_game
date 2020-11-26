@@ -20,6 +20,7 @@ class GameManager:
     def __init__(self):
         self.stage_idx = 0
         self.stages = []
+        self.menu_scene = MenuScene(self)
         self.defeat_scene = DefeatScene(self)
         for i in range(STAGE_NUM):
             self.stages.append(CircusScene(self))
@@ -59,3 +60,6 @@ class GameManager:
 
     def get_stage(self):
         return self.stages[self.stage_idx]
+
+    def get_menu(self):
+        return self.menu_scene
