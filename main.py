@@ -1,4 +1,5 @@
 from controllers.manager import *
+from controllers.scene import *
 from bangtal import *
 
 setGameOption(GameOption.INVENTORY_BUTTON, False)

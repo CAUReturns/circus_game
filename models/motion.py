@@ -42,9 +42,12 @@ class Jump(Movement):
         super().__init__(creature, delay, start_time, max_time)
 
     def action(self):
+        if self.creature.damaging:
+            self.stop()
         dist = 1 if self.count <= self.max_time/2 else -1
         dist *= 5/self.frame
-        self.creature.move(0, int(dist))
+        if not self.stopped:
+            self.creature.move(0, int(dist))
 
 
 class Come(Movement):
@@ -85,7 +88,9 @@ class Damage(Timer):
     def __init__(self, creature):
         super().__init__(0.5)
         self.creature = creature
+        self.creature.set_hitbox(100, 90, 100)
 
     def onTimeout(self):
         if not self.creature.ended:
             self.creature.stand()
+            self.creature.damaging = False
