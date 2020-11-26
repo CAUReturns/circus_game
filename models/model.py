@@ -46,7 +46,6 @@ class Creature(CustomObject):
 
     def move(self, xd, yd):
         super().move(xd, yd)
-        self.scene.check_hit()
 
 
 class User(Creature):
