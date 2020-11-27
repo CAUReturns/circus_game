@@ -21,13 +21,18 @@ class CircusScene(Scene):
         self.direction = 1
         self.obstacles = []
         self.landscapes = []
+        self.destination = None
         super().__init__('', Formatter.image('background'))
         self.life = []
 
-    def initialize(self, user, obstacles, landscapes, life_cnt):
+    def initialize(self, user, obstacles, landscapes, life_cnt, destination):
         self.user = user
         self.sound = Sound(Formatter.sound('gameplay', ''))
+        for obs in self.obstacles:
+            obs.hide()
         self.obstacles = []
+        for landscape in self.landscapes:
+            landscape.hide()
         self.landscapes = []
         for obs in obstacles:
             self.add_obstacle(obs)
@@ -35,6 +40,9 @@ class CircusScene(Scene):
             self.add_landscape(ls)
         for i in range(life_cnt):
             self.increase_life()
+        if self.destination:
+            self.destination.hide()
+        self.destination = destination
 
     def increase_life(self):
         self.life.append(Life(self, self.life.__len__()))
@@ -66,6 +74,11 @@ class CircusScene(Scene):
         if hit:
             self.user.damage()
             self.decrease_life()
+
+        #Check Vcitory
+        if self.destination.hit(self.user):
+            self.sound.stop()
+            self.manager.stage_clear()
 
     def move(self, idx):
         if self.direction == idx:
@@ -121,7 +134,7 @@ class DefeatScene(Scene):
 
     def start_game(self):
         self.sound.stop()
-        self.manager.start_game()
+        self.manager.enter_stage_scene.enter()
 
 
 class MenuScene(Scene):
@@ -134,4 +147,25 @@ class MenuScene(Scene):
 
     def start_game(self):
         self.sound.stop()
+        self.manager.enter_stage_scene.enter()
+
+class EnterStageScene(Scene):
+
+    def __init__(self, manager):
+        super().__init__('', Formatter.image('enter_stage_scene'))
+        self.manager = manager
+        self.stage_num_img = []
+        self.base_x = 650
+        self.base_y = 310
+        self.len = 40
+
+    def init_scene(self, number):
+        for img in self.stage_num_img:
+            img.hide()
+        self.stage_num_img = []
+        for idx, num in enumerate(str(number)):
+            num_img = Number(num, self, self.base_x + idx * self.len, self.base_y)
+            self.stage_num_img.append(num_img)
+
+    def onKeyboard(self, key, pressed):
         self.manager.start_game()
