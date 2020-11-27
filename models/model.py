@@ -34,10 +34,11 @@ class Life(CustomObject):
 
 
 class Landscape(CustomObject):
-    def __init__(self, game_scene):
+    def __init__(self, game_scene, stage):
         img = Formatter.image('landscape')
         super().__init__(1300, 419, img, game_scene)
         self.motion = Come(self)
+        self.motion.set_stage_speed = stage
         self.motion.start()
 
     def change_direction(self):
@@ -115,10 +116,11 @@ class User(Creature):
 
 
 class Obstacle(Creature):
-    def __init__(self, game_scene, y, xr, yr, start_time, img):
+    def __init__(self, game_scene, stage, y, xr, yr, start_time, img):
         super().__init__(1300, y, xr, yr, img, game_scene)
         self.already_hit = False
         self.motion = Come(self, start_time)
+        self.motion.set_stage_speed(stage)
         self.motion.start()
 
     def hit(self, user):
@@ -143,12 +145,49 @@ class Obstacle(Creature):
 
 
 class Douner(Obstacle):
-    def __init__(self, game_scene, y=100, start_time=0):
+    def __init__(self, game_scene, stage, y=100, start_time=0):
         img = Formatter.image('obs1')
-        super().__init__(game_scene, y, 50, 60, start_time, img)
+        super().__init__(game_scene, stage, y, 50, 60, start_time, img)
 
 
 class Dooli(Obstacle):
-    def __init__(self, game_scene, y=100, start_time=0):
+    def __init__(self, game_scene, stage, y=100, start_time=0):
         img = Formatter.image('obs2')
-        super().__init__(game_scene, y, 50, 60, start_time, img)
+        super().__init__(game_scene, stage, y, 50, 60, start_time, img)
+
+class Destination(Obstacle):
+    def __init__(self, game_scene, stage, y=100, start_time=0):
+        img = Formatter.image('destination')
+        super().__init__(game_scene, stage, y, 50, 60, start_time, img)
+
+class Number(Object):
+    def __init__(self, num, target_scene, x, y, scale=1.0):
+        img = None
+        if num == '0':
+            img = Formatter.image('0')
+        elif num == '1':
+            img = Formatter.image('1')
+        elif num == '2':
+            img = Formatter.image('2')
+        elif num == '3':
+            img = Formatter.image('3')
+        elif num == '4':
+            img = Formatter.image('4')
+        elif num == '5':
+            img = Formatter.image('5')
+        elif num == '6':
+            img = Formatter.image('6')
+        elif num == '7':
+            img = Formatter.image('7')
+        elif num == '8':
+            img = Formatter.image('8')
+        else:
+            img = Formatter.image('9')
+        super().__init__(img)
+        self.x = x
+        self.y = y
+        self.scale = scale
+        self.scene = target_scene
+        self.locate(target_scene, self.x, self.y)
+        self.setScale(self.scale)
+        self.show()

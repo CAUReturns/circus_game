@@ -18,48 +18,54 @@ LIFE_CNT = 3
 
 class GameManager:
     def __init__(self):
-        self.stage_idx = 0
-        self.stages = []
+        self.stage_idx = 1
         self.menu_scene = MenuScene(self)
         self.defeat_scene = DefeatScene(self)
-        for i in range(STAGE_NUM):
-            self.stages.append(CircusScene(self))
+        self.enter_stage_scene = EnterStageScene(self)
+        self.enter_stage_scene.init_scene(self.stage_idx)
+        self.stage = CircusScene(self)
+        self.user = User(self.stage)
 
     def start_game(self):
-        stage = self.initialize_stage()
-        stage.enter()
+        self.initialize_stage()
+        self.stage.enter()
 
     def end_game(self):
-        stage = self.get_stage()
-        stage.end()
+        self.stage.end()
+        self.stage.destination.hide()
         self.defeat_scene.enter()
 
+    def stage_clear(self):
+        self.stage_idx += 1
+        self.enter_stage_scene.init_scene(self.stage_idx)
+        self.enter_stage_scene.enter()
+
     def initialize_stage(self):
-        stage = self.get_stage()
-        user = User(stage)
         obstacles = self.get_random_obstacles()
-        landscapes = [Landscape(stage)]
-        stage.initialize(user, obstacles, landscapes, LIFE_CNT)
-        return stage
+        destination = Destination(self.stage, self.stage_idx, start_time=GAME_TIME + 3)
+        landscapes = [Landscape(self.stage, self.stage_idx)]
+        self.stage.initialize(self.user, obstacles, landscapes, LIFE_CNT, destination)
+
+        return self.stage
 
     def get_random_obstacles(self):
         obstacles = []
-        stage = self.get_stage()
-        for time_slice in range(0, GAME_TIME, OBSTACLE_INTERVAL):
-            variation = random.randrange(3) - 1
-            timing = time_slice - variation
+        stage = self.stage
+        timing = 0
+        while timing < GAME_TIME:
+            variation = random.randrange(3)
+            timing = timing + variation - 0.2 * self.stage_idx
 
             obstacle = random.randrange(OBSTACLE_NUM)
             height = random.randrange(1, 3) * 100
 
             if obstacle == ObstacleType.DOOLI.value:
-                obstacles.append(Dooli(stage, y=height, start_time=timing))
+                obstacles.append(Dooli(stage, self.stage_idx, y=height, start_time=timing))
             elif obstacle == ObstacleType.DOUNER.value:
-                obstacles.append(Douner(stage, y=height, start_time=timing))
-        return obstacles
+                obstacles.append(Douner(stage, self.stage_idx, y=height, start_time=timing))
+            timing += 2
 
-    def get_stage(self):
-        return self.stages[self.stage_idx]
+        return obstacles
 
     def get_menu(self):
         return self.menu_scene
