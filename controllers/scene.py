@@ -25,20 +25,29 @@ class CircusScene(Scene):
         super().__init__('', Formatter.image('background'))
         self.life = []
 
-    def initialize(self, user, obstacles, landscapes, life_cnt, destination):
+    def initialize(self, user, obstacles, landscapes, life_cnt, destination, sound):
+        if self.user:
+            self.user.stop()
+            self.user.hide()
+            del self.user
         self.user = user
-        self.sound = Sound(Formatter.sound('gameplay', ''))
+        user.show()
+        self.sound = sound
         for obs in self.obstacles:
+            obs.stop()
             obs.hide()
+            del obs
         self.obstacles = []
         for landscape in self.landscapes:
+            landscape.stop()
             landscape.hide()
+            del landscape
         self.landscapes = []
         for obs in obstacles:
             self.add_obstacle(obs)
         for ls in landscapes:
             self.add_landscape(ls)
-        for i in range(life_cnt):
+        while len(self.life) < life_cnt:
             self.increase_life()
         if self.destination:
             self.destination.hide()
