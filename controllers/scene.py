@@ -84,10 +84,10 @@ class CircusScene(Scene):
             self.user.damage()
             self.decrease_life()
 
-        #Check Vcitory
         if self.destination.hit(self.user):
             self.sound.stop()
-            self.manager.stage_clear()
+            if not self.manager.check_victory():
+                self.manager.stage_clear()
 
     def move(self, idx):
         if self.direction == idx:
@@ -143,7 +143,20 @@ class DefeatScene(Scene):
 
     def start_game(self):
         self.sound.stop()
+        self.manager.enter_stage_scene.init_scene(self.manager.stage_idx)
         self.manager.enter_stage_scene.enter()
+
+
+class VictoryScene(Scene):
+    def __init__(self, manager):
+        super().__init__('', Formatter.image('victory_scene'))
+        self.manager = manager
+        self.sound = Sound(Formatter.sound('victory', ''))
+        self.btn = EndButton(self)
+
+    def enter(self):
+        self.sound.play(loop=False)
+        super().enter()
 
 
 class MenuScene(Scene):
@@ -152,11 +165,14 @@ class MenuScene(Scene):
         self.manager = manager
         self.sound = Sound(Formatter.sound('main', ''))
         self.btn = StartButton(self)
+        self.rule_btn = RuleButton(self)
         self.sound.play(loop=True)
 
     def start_game(self):
         self.sound.stop()
+        self.manager.init_enter_scene()
         self.manager.enter_stage_scene.enter()
+
 
 class EnterStageScene(Scene):
 
@@ -176,5 +192,6 @@ class EnterStageScene(Scene):
             num_img = Number(num, self, self.base_x + idx * self.len, self.base_y)
             self.stage_num_img.append(num_img)
 
-    def onKeyboard(self, key, pressed):
-        self.manager.start_game()
+        timer = Timer(2)
+        timer.onTimeout = self.manager.start_game
+        timer.start()

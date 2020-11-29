@@ -155,10 +155,12 @@ class Dooli(Obstacle):
         img = Formatter.image('obs2')
         super().__init__(game_scene, stage, y, 50, 60, start_time, img)
 
+
 class Destination(Obstacle):
     def __init__(self, game_scene, stage, y=100, start_time=0):
         img = Formatter.image('destination')
         super().__init__(game_scene, stage, y, 50, 60, start_time, img)
+
 
 class Number(Object):
     def __init__(self, num, target_scene, x, y, scale=1.0):
