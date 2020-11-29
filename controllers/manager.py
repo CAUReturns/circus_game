@@ -14,6 +14,7 @@ GAME_TIME = 20
 OBSTACLE_INTERVAL = 3
 OBSTACLE_NUM = ObstacleType.__len__()
 LIFE_CNT = 3
+MAX_STAGE = 2
 
 
 class GameManager:
@@ -21,8 +22,8 @@ class GameManager:
         self.stage_idx = 1
         self.menu_scene = MenuScene(self)
         self.defeat_scene = DefeatScene(self)
+        self.victory_scene = VictoryScene(self)
         self.enter_stage_scene = EnterStageScene(self)
-        self.enter_stage_scene.init_scene(self.stage_idx)
         self.stage = CircusScene(self)
         self.user = None
         self.sound_list = []
@@ -39,10 +40,24 @@ class GameManager:
         self.stage.destination.hide()
         self.defeat_scene.enter()
 
+    def check_victory(self):
+        if self.stage_idx == MAX_STAGE:
+            self.victory()
+            return True
+        return False
+
+    def victory(self):
+        self.stage.end()
+        self.stage.destination.hide()
+        self.victory_scene.enter()
+
     def stage_clear(self):
         self.stage_idx += 1
         self.enter_stage_scene.init_scene(self.stage_idx)
         self.enter_stage_scene.enter()
+
+    def init_enter_scene(self):
+        self.enter_stage_scene.init_scene(self.stage_idx)
 
     def initialize_stage(self):
         self.user = User(self.stage)

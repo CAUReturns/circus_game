@@ -20,6 +20,14 @@ class RetryButton(CustomInterface):
         self.scene.start_game()
 
 
+class EndButton(CustomInterface):
+    def __init__(self, game_scene):
+        super().__init__(467, 180, Formatter.image('end_btn', ''), game_scene)
+
+    def onMouseAction(self, x, y, action):
+        endGame()
+
+
 class StartButton(CustomInterface):
     def __init__(self, game_scene):
         super().__init__(505, 70, Formatter.image('start_btn', ''), game_scene)
