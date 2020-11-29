@@ -165,6 +165,7 @@ class MenuScene(Scene):
         self.manager = manager
         self.sound = Sound(Formatter.sound('main', ''))
         self.btn = StartButton(self)
+        self.rule_btn = RuleButton(self)
         self.sound.play(loop=True)
 
     def start_game(self):

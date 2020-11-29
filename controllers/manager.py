@@ -14,7 +14,7 @@ GAME_TIME = 20
 OBSTACLE_INTERVAL = 3
 OBSTACLE_NUM = ObstacleType.__len__()
 LIFE_CNT = 3
-MAX_STAGE = 2
+MAX_STAGE = 3
 
 
 class GameManager:
