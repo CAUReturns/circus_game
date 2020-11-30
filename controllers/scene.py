@@ -17,6 +17,7 @@ class CircusScene(Scene):
         self.map_idx = 0
         self.user = None
         self.sound = None
+        self.hit_sound = Sound(Formatter.sound('hit', ''));
         self.manager = manager
         self.direction = 1
         self.obstacles = []
@@ -81,6 +82,7 @@ class CircusScene(Scene):
         for ob in self.obstacles:
             hit = hit or ob.hit(self.user)
         if hit:
+            self.hit_sound.play();
             self.user.damage()
             self.decrease_life()
 

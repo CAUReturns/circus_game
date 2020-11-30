@@ -5,9 +5,9 @@
 ![1.png](docs/1.PNG)
 
 
-### Youtube Link
+### Youtube Link (Click the image below)
 
-[![Youtube Link](https://img.youtube.com/vi/8uTViakvevs/0.jpg)](https://www.youtube.com/watch?v=8uTViakvevs)
+[![Youtube Link](https://img.youtube.com/vi/E8mPpEACvY4/0.jpg)](https://youtu.be/E8mPpEACvY4)
 
 ### How to run app
 
