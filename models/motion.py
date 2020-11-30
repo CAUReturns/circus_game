@@ -1,6 +1,6 @@
 from bangtal import *
 from models.model import *
-
+from controllers.libs import *
 
 class Movement(Timer):
     def __init__(self, creature, delay, start_time, max_time):
@@ -36,6 +36,7 @@ class Movement(Timer):
 
 class Jump(Movement):
     def __init__(self, creature, start_time=0):
+        self.jump_sound = Sound(Formatter.sound('jump', ''));
         self.frame = 0.5
         delay = 0.01/self.frame
         max_time = 100*self.frame
@@ -47,6 +48,7 @@ class Jump(Movement):
         dist = 1 if self.count <= self.max_time/2 else -1
         dist *= 5/self.frame
         if not self.stopped:
+            self.jump_sound.play();
             self.creature.move(0, int(dist))
 
 
